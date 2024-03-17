@@ -5,113 +5,97 @@
 
 namespace {
     class Item {
-        public:
-            Item(const std::string& name, unsigned weight, unsigned price) : 
-                _name(name), _weight(weight), _price(price) {}
+    public:
+        Item(const std::string &name, unsigned weight, unsigned price): _name(name), _weight(weight), _price(price) {}
 
+        const std::string &get_name() const { return _name; }
 
-            const std::string& get_name() const {
-                return _name;
-            }
+        unsigned get_weight() const { return _weight; }
 
-            unsigned get_weight() const {
-                return _weight;
-            }
+        unsigned get_price() const { return _price; }
 
-            unsigned get_price() const {
-                return _price;
-            }
+        void print(std::ostream &os) const { os << ": " << _name << " " << _weight << " " << _price << std::endl; }
 
-            void print(std::ostream& os) const {
-                os << ": " << _name << " " << _weight << " " << _price << std::endl;
-            }
-
-        private:
-            std::string _name;
-            unsigned _weight, _price;
+    private:
+        std::string _name;
+        unsigned    _weight, _price;
     };
 
     class Inventory {
-        public:
-            explicit Inventory(unsigned size) : _size(size) {}
+    public:
+        explicit Inventory(unsigned size): _size(size) {}
 
-            bool put(const Item& item) {
-                unsigned weight = item.get_weight();
+        bool put(const Item &item) {
+            unsigned weight = item.get_weight();
 
-                if (weight > _size)
-                    return false;
-                
-                _size -= weight;
-                _items.push_back(item);
+            if (weight > _size)
+                return false;
 
-                return true;
-            }
+            _size -= weight;
+            _items.push_back(item);
 
-            void print(std::ostream& os) const {
-                for (const auto item: _items)
-                    item.print(os);
-            }
+            return true;
+        }
 
-        private:
-            unsigned _size;
-            std::vector<Item> _items;
+        void print(std::ostream &os) const {
+            for (const auto item : _items)
+                item.print(os);
+        }
+
+    private:
+        unsigned          _size;
+        std::vector<Item> _items;
     };
 
     class Player {
-        public:
-            Player(const std::string& name, unsigned strength) : _name(name), _strength(strength), _inventory(Inventory(strength)) {}
+    public:
+        Player(const std::string &name, unsigned strength): _name(name), _strength(strength), _inventory(Inventory(strength)) {}
 
-            const std::string& get_name() const {
-                return _name;
-            }
+        const std::string &get_name() const { return _name; }
 
-            bool take(const Item& item) {
-                return _inventory.put(item);
-            }
+        bool take(const Item &item) { return _inventory.put(item); }
 
-            void print(std::ostream& os) const {
-                os << _name << "\n";
+        void print(std::ostream &os) const {
+            os << _name << "\n";
 
-                _inventory.print(os);
-            }
+            _inventory.print(os);
+        }
 
-            bool operator< (const Player& player) const { // For set sort in Party
-                return _name < player._name;
-            }
-        
-        private:
-            std::string _name;
-            unsigned _strength;
-            Inventory _inventory;
+        bool operator<(const Player &player) const { return _name < player._name; }
+
+    private:
+        std::string _name;
+        unsigned    _strength;
+        Inventory   _inventory;
     };
 
     class Party {
-        public:
-            bool add(const Player& player) {
-                auto result = _players.insert(player);
+    public:
+        bool add(const Player &player) {
+            auto result = _players.insert(player);
 
-                return result.second;
-            }
+            return result.second;
+        }
 
-            bool give(const std::string& player_name, const Item& item) {
-                for (auto player : _players)
-                    if (player.get_name() == player_name)
-                        return player.take(item);
+        bool give(const std::string &player_name, const Item &item) {
+            for (auto player : _players)
+                if (player.get_name() == player_name)
+                    return player.take(item);
 
-                return false;
-            }
+            return false;
+        }
 
-            void print(std::ostream& os) const {               
-                for (const auto &player : _players) 
-                    player.print(os);
-            }
+        void print(std::ostream &os) const {
+            for (const auto &player : _players)
+                player.print(os);
+        }
 
-        private:
-            std::set<Player> _players;
+    private:
+        std::set<Player> _players;
     };
-}
+}  // namespace
 
-int main () {
+int main() {
     Item sword("Sword", 10, 128);
     Item bow("Bow", 20, 256);
 

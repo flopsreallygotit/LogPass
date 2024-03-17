@@ -2,3 +2,4 @@ build
 setup.sh
 compile_commands.json
 .cache
+pass.log
