@@ -1,10 +1,9 @@
-#include <algorithm> //TODO: clangd says: "Included header is not used directly"
 #include <iostream>
 #include <vector>
 #include <set>
 
 namespace {
-    class Item { // TODO: poor class name, no `final` keyword / virtual dtor
+    class Item {  // TODO: poor class name, no `final` keyword / virtual dtor
     public:
         Item(const std::string &name, unsigned weight, unsigned price): _name(name), _weight(weight), _price(price) {}
 
@@ -15,14 +14,14 @@ namespace {
         unsigned get_price() const { return _price; }
 
         // TODO Maybe it's better to overload `operator<<`?
-        void print(std::ostream &os) const { os << ": " << _name << " " << _weight << " " << _price << std::endl; } 
+        void print(std::ostream &os) const { os << ": " << _name << " " << _weight << " " << _price << std::endl; }
 
     private:
         std::string _name;
         unsigned    _weight, _price;
     };
 
-    class Inventory { // TODO Poor class name, no `final` keyword / virtual dtor
+    class Inventory {  // TODO Poor class name, no `final` keyword / virtual dtor
     public:
         explicit Inventory(unsigned size): _size(size) {}
 
@@ -32,17 +31,16 @@ namespace {
             if (weight > _size)
                 return false;
 
-            _size -= weight; // TODO: It's bad practice to start your variable name with `_`, bc., for example, leading undersore before capital is reserved.
-                             //       If you want to show that variable is a field, use `m_`, or any other field prefix.
+            _size -= weight;  // TODO: It's bad practice to start your variable name with `_`, bc., for example, leading
+                              // undersore before capital is reserved.
+                              //       If you want to show that variable is a field, use `m_`, or any other field prefix.
             _items.push_back(item);
 
             return true;
         }
 
         void print(std::ostream &os) const {
-            for (const auto item : _items)  // TODO use of unnececcary copy-ctor. 
-                                            // explanation: https://cppinsights.io/s/9c59bbac, clcik "Run" then check right view, line 78
-                                            // try to change to `const auto& item : _items` and check whats changed in right view
+            for (auto &item : _items)
                 item.print(os);
         }
 
@@ -65,9 +63,8 @@ namespace {
             _inventory.print(os);
         }
 
-        bool operator<(const Player &player) const { return _name < player._name; } // TODO Why?...
-                                                                                    // It's always better to overload starship operator (<=>)
-                                                                                    // for comparasion
+        bool operator<(const Player &player) const { return _name < player._name; }
+
     private:
         std::string _name;
         unsigned    _strength;
@@ -83,7 +80,7 @@ namespace {
         }
 
         bool give(const std::string &player_name, const Item &item) {
-            for (auto player : _players) // TODO unnessesary copy ctor
+            for (auto player : _players)
                 if (player.get_name() == player_name)
                     return player.take(item);
 
@@ -101,8 +98,7 @@ namespace {
 }  // namespace
 
 int main() {
-    Item sword("Sword", 10, 128); // TODO: E2E tests are cool, but you should add unit tests.
-                                  // TODO: Use google tests for that. They are easy to use.
+    Item sword("Sword", 10, 128);  // TODO Add gtests
     Item bow("Bow", 20, 256);
 
     Player flops("Flops", 100);

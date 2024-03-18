@@ -3,7 +3,7 @@ project(log-pass)
 
 set(CMAKE_CXX_STANDARD 14)
 
-find_package(LLVM REQUIRED CONFIG) # TODO add exact llvm version, bc. of unstable llvm's interface
+find_package(LLVM 14 REQUIRED CONFIG)
 
 add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
