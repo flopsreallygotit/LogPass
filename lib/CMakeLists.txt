@@ -1,5 +1,5 @@
 add_library(log_pass MODULE
-    log_pass.cpp
+    log_pass.cpp log_funcs.cpp
 )
 
 target_compile_features(log_pass PRIVATE cxx_range_for cxx_auto_type)
