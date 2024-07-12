@@ -1,3 +1,5 @@
+#include <llvm-14/llvm/IR/DerivedTypes.h>
+#include <llvm-14/llvm/Transforms/Utils/ModuleUtils.h>
 #include <iostream>
 
 #include "llvm/Pass.h"
@@ -16,9 +18,8 @@
 
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Passes/PassBuilder.h"
-#include "llvm/Passes/OptimizationLevel.h"
 
-#include "llvm/Support/raw_ostream.h"
+#include "llvm/Transforms/Utils/ModuleUtils.h"
 
 using namespace llvm;
 
@@ -36,6 +37,11 @@ namespace {
 
             FunctionType  *log_call_function_t = FunctionType::get(llvm_void_t, {llvm_str_t}, false);
             FunctionCallee log_call_function   = module.getOrInsertFunction(log_call_function_name, log_call_function_t);
+
+            FunctionType *log_deinit_function_t = FunctionType::get(llvm_void_t, false);
+            Function     *log_deinit_function =
+                Function::Create(log_deinit_function_t, Function::ExternalLinkage, log_deinit_function_name, module);
+            appendToGlobalDtors(module, log_deinit_function, 0);
 
             for (auto &function : module) {
                 std::string function_name = function.getName().str();
@@ -61,8 +67,9 @@ namespace {
         }
 
     private:
-        const std::string log_init_function_name = "log_function_init";
-        const std::string log_call_function_name = "log_function_call";
+        const std::string log_init_function_name   = "log_function_init";
+        const std::string log_call_function_name   = "log_function_call";
+        const std::string log_deinit_function_name = "log_function_deinit";
     };
 }  // end of anonymous namespace
 
