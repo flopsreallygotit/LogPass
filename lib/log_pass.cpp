@@ -1,74 +1,81 @@
-#include <llvm/Pass.h>
-#include <llvm/IR/Module.h>
-#include <llvm/IR/Function.h>
-#include <llvm/IR/DebugLoc.h>
-#include <llvm/Support/FileSystem.h>
-#include <llvm/Support/raw_ostream.h>
-#include <llvm/IR/LegacyPassManager.h>
-#include <llvm/Transforms/IPO/PassManagerBuilder.h>
+#include <llvm-14/llvm/IR/DerivedTypes.h>
+#include <llvm-14/llvm/Transforms/Utils/ModuleUtils.h>
+#include <iostream>
+
+#include "llvm/Pass.h"
+
+#include "llvm/IR/Type.h"
+#include "llvm/IR/Value.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Instruction.h"
+#include "llvm/IR/PassManager.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/DerivedTypes.h"
+
+#include "llvm/Passes/PassPlugin.h"
+#include "llvm/Passes/PassBuilder.h"
+
+#include "llvm/Transforms/Utils/ModuleUtils.h"
 
 using namespace llvm;
 
 namespace {
+    struct LogPass final : public PassInfoMixin<LogPass> {
+        PreservedAnalyses run(Module &module, ModuleAnalysisManager &module_analysis_manager) {
+            LLVMContext &llvm_context = module.getContext();
+            IRBuilder<>  builder(llvm_context);
 
-    struct FunctionLogPass : public FunctionPass {  // TODO Version with new PM
-    public:
-        static char ID;
+            Type *llvm_void_t = Type::getVoidTy(llvm_context);
+            Type *llvm_str_t  = Type::getInt8PtrTy(llvm_context);
 
-        FunctionLogPass(): FunctionPass(ID), logfile("pass.log", logfile_error, sys::fs::OpenFlags::OF_Append) {
-            if (logfile.has_error())
-                errs() << logfile.error().message() << '\n';
-        }
+            FunctionType  *log_init_function_t = FunctionType::get(llvm_void_t, false);
+            FunctionCallee log_init_function   = module.getOrInsertFunction(log_init_function_name, log_init_function_t);
 
-        static void log_function_ir_info(Function &function, raw_fd_ostream &logfile) {
-            auto &&module_name = function.getParent()->getName();
+            FunctionType  *log_call_function_t = FunctionType::get(llvm_void_t, {llvm_str_t}, false);
+            FunctionCallee log_call_function   = module.getOrInsertFunction(log_call_function_name, log_call_function_t);
 
-            function.getAttributes().print(logfile);
-            function.getFunctionType()->print(logfile);
-            logfile << ' ' << function.getName() << " (" << module_name << "): {\n";
+            FunctionType *log_deinit_function_t = FunctionType::get(llvm_void_t, false);
+            Function     *log_deinit_function =
+                Function::Create(log_deinit_function_t, Function::ExternalLinkage, log_deinit_function_name, module);
+            appendToGlobalDtors(module, log_deinit_function, 0);
 
-            for (auto &basic_block : function) {
-                logfile << "\tBasic block: " << &basic_block << " [\n";
+            for (auto &function : module) {
+                std::string function_name = function.getName().str();
 
-                for (auto &instruction : basic_block) {
-                    auto &debug_location = instruction.getDebugLoc();
+                if (function.isDeclaration())
+                    continue;
 
-                    if (debug_location)
-                        logfile << "\n\t\tLocation: " << module_name << ':' << debug_location.getLine() << '\n';
+                std::cout << "Instrumenting: `" << function_name << "`\n";
 
-                    logfile << "\t\tInstruction: ";
-                    instruction.print(logfile);
-                    logfile << '\n';
+                auto &first_instruction = *function.getEntryBlock().getFirstInsertionPt();
+                builder.SetInsertPoint(&first_instruction);
+
+                if (function_name == "main")
+                    builder.CreateCall(log_init_function);
+
+                else {
+                    Value *function_name_value = builder.CreateGlobalStringPtr(function_name.c_str());
+                    builder.CreateCall(log_call_function, {function_name_value});
                 }
-
-                logfile << "\t]\n\n";
             }
 
-            logfile << "}\n\n";
+            return PreservedAnalyses::all();
         }
-
-        bool runOnFunction(Function &function) override final {
-            if (function.isDeclaration())
-                return false;
-
-            log_function_ir_info(function, logfile);
-
-            return false;
-        }
-
-        void getAnalysisUsage(AnalysisUsage &analysis_usage) const override final { analysis_usage.setPreservesAll(); }
 
     private:
-        raw_fd_ostream  logfile;  // TODO Maybe use standart file stream instead of llvm's one, because of llvm instability
-        std::error_code logfile_error;
+        const std::string log_init_function_name   = "log_function_init";
+        const std::string log_call_function_name   = "log_function_call";
+        const std::string log_deinit_function_name = "log_function_deinit";
     };
+}  // end of anonymous namespace
 
-}  // namespace
-
-char FunctionLogPass::ID = 0;
-
-static void registerFunctionLogPassPass(const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-    PM.add(new FunctionLogPass());
+extern "C" PassPluginLibraryInfo LLVM_ATTRIBUTE_WEAK llvmGetPassPluginInfo() {
+    return {
+        LLVM_PLUGIN_API_VERSION, "Log-Pass", "v1.0", [](PassBuilder &PB) {
+            PB.registerOptimizerLastEPCallback([](ModulePassManager &MPM, OptimizationLevel O0) { MPM.addPass(LogPass()); });
+        }};
 }
-
-static RegisterStandardPasses RegisterMyPass(PassManagerBuilder::EP_EarlyAsPossible, registerFunctionLogPassPass);
