@@ -46,10 +46,10 @@ namespace {
             for (auto &function : module) {
                 std::string function_name = function.getName().str();
 
-                // std::cout << "Right now on: `" << function_name << "`\n";
-
                 if (function.isDeclaration())
                     continue;
+
+                std::cout << "Instrumenting: `" << function_name << "`\n";
 
                 auto &first_instruction = *function.getEntryBlock().getFirstInsertionPt();
                 builder.SetInsertPoint(&first_instruction);
