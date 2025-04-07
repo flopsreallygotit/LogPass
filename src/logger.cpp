@@ -34,7 +34,8 @@ int add_logger_deps(std::string &command) {
         return -1;
 
     command += " -fpass-plugin=" + pass_plugin + " ";
-    command += log_funcs_lib;
+    command += log_funcs_lib + " ";
+    command += "-lstdc++";  // log funcs depends on C++ stdlib
 
     return 0;
 }
