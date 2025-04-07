@@ -18,22 +18,16 @@ To build pass library write:
 mkdir build
 cd build
 cmake ..
-make
+make -j
 ```
 
 ## Usage
 
-Then you can test it on your sources with:
+Use `loggercc` as C-compiler and `loggercxx` as C++-compiler:
 
 ```bash
-clang -fpass-plugin=build/lib/liblog_pass.so -lstdc++ test.c
-clang++ -fpass-plugin=build/lib/liblog_pass.so test.cpp
-```
+CC=/path/to/loggercc
+CXX=/path/to/loggercxx
 
-For big projects use following flags:
-
-```bash
-export CFLAGS="-g -O0 -fpass-plugin=/path/to/liblog_pass.so"
-export CXXFLAGS="-g -O0 -fpass-plugin=/path/to/liblog_pass.so"
-export LDFLAGS="-lstdc++"
+cmake / make / ninja / ...
 ```
