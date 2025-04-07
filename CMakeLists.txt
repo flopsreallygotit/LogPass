@@ -17,7 +17,11 @@ add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS} include)
 link_directories(${LLVM_LIBRARY_DIRS})
 
-add_subdirectory(lib)
 
-enable_testing()
+set(LOG_PASS_NAME log_pass)
+set(LOG_FUNCS_NAME log_funcs)
+
+add_subdirectory(lib)
+add_subdirectory(src)
+
 add_subdirectory(tests)

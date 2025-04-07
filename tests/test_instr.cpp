@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#include "json.hpp"
+
 TEST(AddTest, simpleEq) { ASSERT_EQ(0, 0); }
 
 int main(int argc, char **argv) {

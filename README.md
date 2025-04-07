@@ -7,7 +7,7 @@ LLVM Pass that logs all IR info and collects code coverage. The project is under
 You can install dependencies on Debian/Ubuntu with following command:
 
 ```bash
-sudo apt install nlohmann-json3-dev clang-14 llvm-14-dev cmake make
+sudo apt install clang-14 llvm-14-dev cmake make
 ```
 
 ## Quick Start
