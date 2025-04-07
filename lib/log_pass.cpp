@@ -1,5 +1,3 @@
-#include <llvm-14/llvm/IR/DerivedTypes.h>
-#include <llvm-14/llvm/Transforms/Utils/ModuleUtils.h>
 #include <iostream>
 
 #include "llvm/Pass.h"
@@ -8,12 +6,10 @@
 #include "llvm/IR/Value.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Function.h"
-#include "llvm/IR/Constants.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/PassManager.h"
-#include "llvm/IR/Instructions.h"
 #include "llvm/IR/DerivedTypes.h"
 
 #include "llvm/Passes/PassPlugin.h"
