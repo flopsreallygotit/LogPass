@@ -1,12 +1,14 @@
-set(CMAKE_C_COMPILER clang-14)
-set(CMAKE_CXX_COMPILER clang++-14)
+set(LLVM_VERSION 14)
+
+set(CMAKE_C_COMPILER clang-${LLVM_VERSION})
+set(CMAKE_CXX_COMPILER clang++-${LLVM_VERSION})
 
 cmake_minimum_required(VERSION 3.22)
 project(log-pass)
 
 set(CMAKE_CXX_STANDARD 23)
 
-find_package(LLVM 14 REQUIRED CONFIG)
+find_package(LLVM ${LLVM_VERSION} REQUIRED CONFIG)
 
 include(FetchContent)
 FetchContent_Declare(

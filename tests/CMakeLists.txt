@@ -1,10 +1,10 @@
 add_executable(test_log_funcs test_log_funcs.cpp)
+target_link_libraries(test_log_funcs log_funcs)
 
 target_link_libraries(${PROJECT_TEST_NAME}
   test_log_funcs
   gtest
   gtest_main
-  log_funcs
 )
 
 include(GoogleTest)
