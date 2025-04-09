@@ -1,8 +1,9 @@
 #include <fstream>
+
 #include "gtest/gtest.h"
 
 extern "C" void log_function_init();
-extern "C" void log_function_call(char *function);
+extern "C" void log_function_call(const char *function);
 extern "C" void log_function_deinit();
 
 TEST(InitTest, log_function_init) {  // Checks that init opens output stream
@@ -26,11 +27,7 @@ TEST(DeinitTest, log_function_deinit) {
 
 int main(int argc, char **argv) {
     log_function_init();
-
-    char test_function_name[32];
-    strcpy(test_function_name, "test_function");
-    log_function_call(test_function_name);
-
+    log_function_call("test_function");
     log_function_deinit();
 
     ::testing::InitGoogleTest(&argc, argv);

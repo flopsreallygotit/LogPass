@@ -40,7 +40,7 @@ extern "C" void log_function_init() {
     output.open("logger.log", std::ios_base::app);
 }
 
-extern "C" void log_function_call(char *function) {  // TODO[flops]: Add const qualifier
+extern "C" void log_function_call(const char *function) {
     LoggerSingleton &logger = LoggerSingleton::get_instance();
 
     logger << function;
