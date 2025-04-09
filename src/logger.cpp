@@ -50,7 +50,7 @@ int add_logger_deps(std::string &command, bool use_cxx_version) {  // Real compi
 
 int main(int argc, char *argv[]) {
     std::string callee_name {argv[0]};
-    bool        use_cxx_version = callee_name.contains("cxx");
+    bool        use_cxx_version {callee_name.contains("cxx")};
 
     std::string command = get_compiler(callee_name, use_cxx_version);
 
