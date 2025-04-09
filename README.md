@@ -1,6 +1,6 @@
 # LogPass
 
-LLVM Pass that logs all IR info and collects code coverage. The project is under development.
+LogPass provides compiler wrapper and pass library that logs function traces
 
 # Dependencies
 
@@ -30,4 +30,7 @@ CC=/path/to/loggercc
 CXX=/path/to/loggercxx
 
 cmake / make / ninja / ...
+./a.out
 ```
+
+You'll receive `logger.log` file with function trace.
