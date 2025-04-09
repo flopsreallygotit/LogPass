@@ -1,3 +1,6 @@
+set(CMAKE_C_COMPILER clang-14)
+set(CMAKE_CXX_COMPILER clang++-14)
+
 cmake_minimum_required(VERSION 3.22)
 project(log-pass)
 
@@ -16,12 +19,9 @@ add_definitions(${LLVM_DEFINITIONS})
 
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
-# TODO[flops]: Add force self-compile with clang
-
-set(LOG_PASS_NAME log_pass)
-set(LOG_FUNCS_NAME log_funcs)
 
 add_subdirectory(lib)
 add_subdirectory(src)
 
+enable_testing()
 add_subdirectory(tests)
