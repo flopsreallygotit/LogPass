@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-class LoggerSingleton {
+class LoggerSingleton { // TODO[flops]: Add summary
 private:
     std::ofstream output;
 
@@ -23,8 +23,6 @@ extern "C" void log_function_init() {
 
     std::ofstream &output = logger.get_output();
     output.open("logger.log", std::ios_base::app);
-
-    output << "main" << std::endl;
 }
 
 extern "C" void log_function_call(char *function) {  // TODO[flops]: Add const qualifier
