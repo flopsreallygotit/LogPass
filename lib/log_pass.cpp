@@ -87,25 +87,23 @@ namespace {
             func_set_t global_ctors = get_global_ctors(&module);
 
             for (auto &function : module) {
-                std::string function_name = function.getName().str();
-
-                if (function.isDeclaration())
+                if (function.isDeclaration() || global_ctors.contains(&function))
                     continue;
 
-                BasicBlock &entry_bb          = function.getEntryBlock();
-                auto       &first_instruction = *entry_bb.getFirstInsertionPt();
+                BasicBlock  &entry_bb          = function.getEntryBlock();
+                Instruction &first_instruction = *entry_bb.getFirstInsertionPt();
                 builder.SetInsertPoint(&first_instruction);
+
+                std::string function_name = function.getName().str();
 
                 if (function_name == "main") {
                     errs() << "Inserting logger init in main...\n";
                     builder.CreateCall(log_init_function);
                 }
 
-                else if (!global_ctors.contains(&function)) {
-                    errs() << "Inserting logger call in " << function_name << "...\n";
-                    Value *function_name_value = builder.CreateGlobalStringPtr(function_name.c_str());
-                    builder.CreateCall(log_call_function, {function_name_value});
-                }
+                errs() << "Inserting logger call in " << function_name << "...\n";
+                Value *function_name_value = builder.CreateGlobalStringPtr(function_name.c_str());
+                builder.CreateCall(log_call_function, {function_name_value});
             }
 
             return PreservedAnalyses::all();

@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_definitions(${LLVM_DEFINITIONS})
 
-include_directories(${LLVM_INCLUDE_DIRS} include)
+include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 # TODO[flops]: Add force self-compile with clang
 
