@@ -1,7 +1,5 @@
-set(LOG_PASS_PATH_DEF  "${CMAKE_BINARY_DIR}/lib/lib${LOG_PASS_NAME}.so")
-set(LOG_FUNCS_PATH_DEF "${CMAKE_BINARY_DIR}/lib/lib${LOG_FUNCS_NAME}.a")
-
-# TODO[flops]: Add normal depenedencies system
+set(LOG_PASS_PATH_DEF  "$<TARGET_FILE:log_pass>")
+set(LOG_FUNCS_PATH_DEF "$<TARGET_FILE:log_funcs>")
 
 add_executable(loggercc
     logger.cpp

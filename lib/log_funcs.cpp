@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-class LoggerSingleton { // TODO[flops]: Add summary
+class LoggerSingleton {  // TODO[flops]: Add summary
 private:
     std::ofstream output;
 
@@ -16,6 +16,21 @@ public:
     std::ofstream          &get_output() { return output; }
 };
 
+template<typename T>
+LoggerSingleton &operator<<(LoggerSingleton &logger, T &val) {
+    std::ofstream &output = logger.get_output();
+
+    if (output.is_open()) {
+        output << val << '\n';
+        output.flush();
+    }
+
+    else
+        std::cerr << val << '\n';
+
+    return logger;
+}
+
 LoggerSingleton LoggerSingleton::instance;
 
 extern "C" void log_function_init() {
@@ -25,11 +40,10 @@ extern "C" void log_function_init() {
     output.open("logger.log", std::ios_base::app);
 }
 
-extern "C" void log_function_call(char *function) {  // TODO[flops]: Add const qualifier
+extern "C" void log_function_call(const char *function) {
     LoggerSingleton &logger = LoggerSingleton::get_instance();
 
-    std::ofstream &output = logger.get_output();
-    output << function << std::endl;  // Force flush
+    logger << function;
 }
 
 extern "C" void log_function_deinit() {

@@ -1,9 +1,14 @@
+set(LLVM_VERSION 14)
+
+set(CMAKE_C_COMPILER clang-${LLVM_VERSION})
+set(CMAKE_CXX_COMPILER clang++-${LLVM_VERSION})
+
 cmake_minimum_required(VERSION 3.22)
 project(log-pass)
 
 set(CMAKE_CXX_STANDARD 23)
 
-find_package(LLVM 14 REQUIRED CONFIG)
+find_package(LLVM ${LLVM_VERSION} REQUIRED CONFIG)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -16,12 +21,9 @@ add_definitions(${LLVM_DEFINITIONS})
 
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
-# TODO[flops]: Add force self-compile with clang
-
-set(LOG_PASS_NAME log_pass)
-set(LOG_FUNCS_NAME log_funcs)
 
 add_subdirectory(lib)
 add_subdirectory(src)
 
+enable_testing()
 add_subdirectory(tests)

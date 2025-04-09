@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 
 void foo() { std::cout << "f\n"; }
@@ -9,9 +10,16 @@ void bar(int a) {
         bar(a + 1);
 }
 
-int main() { 
+int main(int argc, char *argv[]) {
     foo();
-    bar(7);
 
-    return 0; 
+    if (argc == 2)
+        abort();
+
+    bar(-7);
+
+    if (argc > 2)
+        abort();
+
+    return 0;
 }
