@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "llvm/Pass.h"
 
 #include "llvm/IR/Type.h"
@@ -99,12 +97,12 @@ namespace {
                 builder.SetInsertPoint(&first_instruction);
 
                 if (function_name == "main") {
-                    std::cerr << "Inserting logger init in main...\n";
+                    errs() << "Inserting logger init in main...\n";
                     builder.CreateCall(log_init_function);
                 }
 
                 else if (!global_ctors.contains(&function)) {
-                    std::cerr << "Inserting logger call in " << function_name << "...\n";
+                    errs() << "Inserting logger call in " << function_name << "...\n";
                     Value *function_name_value = builder.CreateGlobalStringPtr(function_name.c_str());
                     builder.CreateCall(log_call_function, {function_name_value});
                 }
@@ -123,6 +121,6 @@ namespace {
 extern "C" PassPluginLibraryInfo LLVM_ATTRIBUTE_WEAK llvmGetPassPluginInfo() {
     return {
         LLVM_PLUGIN_API_VERSION, "Log-Pass", "v1.0", [](PassBuilder &PB) {
-            PB.registerOptimizerLastEPCallback([](ModulePassManager &MPM, OptimizationLevel O0) { MPM.addPass(LogPass()); });
+            PB.registerOptimizerLastEPCallback([](ModulePassManager &MPM, OptimizationLevel OL) { MPM.addPass(LogPass()); });
         }};
 }
