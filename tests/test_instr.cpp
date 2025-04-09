@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "json.hpp"
-
-TEST(AddTest, simpleEq) { ASSERT_EQ(0, 0); }
+TEST(AddTest, simpleEq) { ASSERT_EQ(0, 0); } // TODO[flops]: Make tests
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
