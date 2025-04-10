@@ -9,13 +9,16 @@
 #include "llvm/IR/PassManager.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
-#include "llvm/Support/Casting.h"
 #include "llvm/IR/DerivedTypes.h"
 
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Passes/PassBuilder.h"
 
 #include "llvm/Transforms/Utils/ModuleUtils.h"
+
+#if LLVM_VERSION_MAJOR < 17
+    #include "llvm/InitializePasses.h"
+#endif
 
 namespace {
     using namespace llvm;
@@ -71,13 +74,14 @@ namespace {
             IRBuilder<>  builder(llvm_context);
 
             Type *llvm_void_t = Type::getVoidTy(llvm_context);
-            Type *llvm_str_t  = Type::getInt8PtrTy(llvm_context);
+#if LLVM_VERSION_MAJOR < 16
+            Type *llvm_str_t = Type::getInt8PtrTy(llvm_context);
+#else
+            Type *llvm_str_t = builder.getPtrTy();
+#endif
 
-            FunctionType  *log_init_function_t = FunctionType::get(llvm_void_t, false);
-            FunctionCallee log_init_function   = module.getOrInsertFunction(log_init_function_name, log_init_function_t);
-
-            FunctionType  *log_call_function_t = FunctionType::get(llvm_void_t, {llvm_str_t}, false);
-            FunctionCallee log_call_function   = module.getOrInsertFunction(log_call_function_name, log_call_function_t);
+            FunctionCallee log_init_function = module.getOrInsertFunction(log_init_function_name, llvm_void_t);
+            FunctionCallee log_call_function = module.getOrInsertFunction(log_call_function_name, llvm_void_t, llvm_str_t);
 
             FunctionType *log_deinit_function_t = FunctionType::get(llvm_void_t, false);
             Function     *log_deinit_function =
@@ -116,9 +120,11 @@ namespace {
     };
 }  // end of anonymous namespace
 
-extern "C" PassPluginLibraryInfo LLVM_ATTRIBUTE_WEAK llvmGetPassPluginInfo() {
+extern "C" ::llvm::PassPluginLibraryInfo LLVM_ATTRIBUTE_WEAK llvmGetPassPluginInfo() {
     return {
-        LLVM_PLUGIN_API_VERSION, "Log-Pass", "v1.0", [](PassBuilder &PB) {
+        LLVM_PLUGIN_API_VERSION, "LogPass", "v0.3",
+        /* lambda to insert our pass into the pass pipeline. */
+        [](PassBuilder &PB) {
             PB.registerOptimizerLastEPCallback([](ModulePassManager &MPM, OptimizationLevel OL) { MPM.addPass(LogPass()); });
         }};
 }

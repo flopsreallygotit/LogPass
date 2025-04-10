@@ -1,14 +1,17 @@
-set(LLVM_VERSION 14)
-
-set(CMAKE_C_COMPILER clang-${LLVM_VERSION})
-set(CMAKE_CXX_COMPILER clang++-${LLVM_VERSION})
-
 cmake_minimum_required(VERSION 3.22)
-project(log-pass)
+project(LogPass)
 
 set(CMAKE_CXX_STANDARD 23)
 
 find_package(LLVM ${LLVM_VERSION} REQUIRED CONFIG)
+find_package(Clang ${LLVM_VERSION} REQUIRED)
+
+# Check for Clang compiler
+if(NOT CMAKE_C_COMPILER_ID STREQUAL "Clang" OR NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    message(FATAL_ERROR "This project requires Clang for compilation.\n"
+        "Detected C compiler: ${CMAKE_C_COMPILER_ID}\n"
+        "Detected C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -18,8 +21,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 add_definitions(${LLVM_DEFINITIONS})
+add_definitions(${CLANG_DEFINITIONS})
 
 include_directories(${LLVM_INCLUDE_DIRS})
+include_directories(${CLANG_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 
 add_subdirectory(lib)
