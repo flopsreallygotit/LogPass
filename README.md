@@ -7,7 +7,7 @@ LogPass provides compiler wrapper and pass library that logs function traces
 You can install dependencies on Debian/Ubuntu with following command:
 
 ```bash
-sudo apt install clang-14 llvm-14-dev cmake make
+sudo apt install clang-16 llvm-16-dev cmake make
 ```
 
 ## Quick Start
@@ -17,7 +17,7 @@ To build pass library write:
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake .. -DCMAKE_C_COMPILER=clang-16 -DCMAKE_CXX_COMPILER=clang++-16
 make -j
 ```
 
