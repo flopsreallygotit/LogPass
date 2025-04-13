@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-class LoggerSingleton {  // TODO[flops]: Add summary
+class LoggerSingleton {
 private:
     std::ofstream output;
 
@@ -20,11 +20,8 @@ template<typename T>
 LoggerSingleton &operator<<(LoggerSingleton &logger, T &val) {
     std::ofstream &output = logger.get_output();
 
-    if (output.is_open()) {
-        output << val << '\n';
-        output.flush();
-    }
-
+    if (output.is_open())
+        output << val << std::endl;
     else
         std::cerr << val << '\n';
 

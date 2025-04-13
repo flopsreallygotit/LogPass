@@ -8,9 +8,9 @@ find_package(Clang ${LLVM_VERSION} REQUIRED)
 
 # Check for Clang compiler
 if(NOT CMAKE_C_COMPILER_ID STREQUAL "Clang" OR NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    message(FATAL_ERROR "This project requires Clang for compilation.\n"
-        "Detected C compiler: ${CMAKE_C_COMPILER_ID}\n"
-        "Detected C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
+  message(FATAL_ERROR "This project requires Clang for compilation.\n"
+    "Detected C compiler: ${CMAKE_C_COMPILER_ID}\n"
+    "Detected C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 include(FetchContent)
